@@ -10,12 +10,12 @@ def generate_launch_description():
     urdf_path = os.path.join(base_dir, 'robot.urdf')
     rviz_config_path = os.path.join(base_dir, 'pylesos.rviz')
 
-    # если у тебя обычный URDF (не xacro), просто читаем его
+    
     with open(urdf_path, 'r') as infp:
         robot_desc = infp.read()
 
     return LaunchDescription([
-        # --- Паблишер состояния робота
+        # Паблишер состояния робота
         Node(
             package='robot_state_publisher',
             executable='robot_state_publisher',
@@ -24,14 +24,14 @@ def generate_launch_description():
             parameters=[{'robot_description': robot_desc}]
         ),
 
-        # --- GUI для суставов
+        # GUI для суставов
         Node(
             package='joint_state_publisher_gui',
             executable='joint_state_publisher_gui',
             name='joint_state_publisher_gui',
         ),
 
-        # --- RViz с нужным конфигом
+        # RViz с нужным конфигом
         Node(
             package='rviz2',
             executable='rviz2',

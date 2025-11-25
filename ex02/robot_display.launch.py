@@ -13,7 +13,7 @@ def generate_launch_description():
     rviz_config_file = os.path.join(pkg_share, 'rviz', 'pylesos.rviz')
 
     return LaunchDescription([
-        # --- Robot State Publisher (генерация xacro через Command)
+        # Robot State Publisher
         Node(
             package='robot_state_publisher',
             executable='robot_state_publisher',
@@ -24,14 +24,14 @@ def generate_launch_description():
             }]
         ),
 
-        # --- GUI для суставов
+        # GUI для суставов
         Node(
             package='joint_state_publisher_gui',
             executable='joint_state_publisher_gui',
             name='joint_state_publisher_gui',
         ),
 
-        # --- RViz
+        # RViz
         Node(
             package='rviz2',
             executable='rviz2',

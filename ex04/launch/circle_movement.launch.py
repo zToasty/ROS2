@@ -32,7 +32,7 @@ def generate_launch_description():
         output='screen',
         parameters=[{
             'robot_description': robot_desc,
-            'use_sim_time': True # Обязательно True
+            'use_sim_time': True
         }]
     )
 
@@ -48,7 +48,7 @@ def generate_launch_description():
         output='screen'
     )
 
-    # 4. Bridge (Мост) - ИСПРАВЛЕНО
+    # 4. Bridge
     bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
@@ -62,25 +62,23 @@ def generate_launch_description():
             # Глобальные TF (Gazebo -> ROS)
             '/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
             
-            # ВАЖНО: Состояние суставов (Gazebo -> ROS) для колес
+            # Состояние суставов (Gazebo -> ROS) для колес
             '/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model' 
         ],
         output='screen'
     )
 
-    # 5. Твой узел для движения по кругу
+    # 5. Узел для движения по кругу
     circle_movement = Node(
         package='gaz_circle_movement',
         executable='circle_movement',
         output='screen'
     )
     
-    # 6. RViz (опционально, но удобно для проверки)
-    # Если есть конфиг - раскомментируй аргументы
+    # 6. RViz
     rviz = Node(
        package='rviz2',
        executable='rviz2',
-       # arguments=['-d', os.path.join(pkg_pylesos_gazebo, 'config', 'diff_drive.rviz')],
        parameters=[{'use_sim_time': True}]
     )
 

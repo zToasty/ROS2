@@ -8,11 +8,9 @@ from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
 def generate_launch_description():
-    pkg_pylesos_work = get_package_share_directory('pylesos_work') # Твой текущий пакет
+    pkg_pylesos_work = get_package_share_directory('pylesos_work')
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
 
-    # Используем твой URDF (старый, проверенный)
-    # Если захочешь новую модель - просто поменяй путь здесь
     urdf_file = os.path.join(pkg_pylesos_work, 'urdf', 'robot.gazebo.xacro')
     robot_desc = ParameterValue(Command(['xacro ', urdf_file]), value_type=str)
 
@@ -39,18 +37,17 @@ def generate_launch_description():
         output='screen'
     )
 
-    # 5. Bridge (Полный, проверенный)
+    # Bridge
     bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
         arguments=[
-            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock', # ФИКС: Время
+            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
             '/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist',
             
-            # Одометрия (должна приходить с DiffDrive)
             '/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry',
             
-            # TF (от OdometryPublisher его теперь нет, используем TF от DiffDrive)
+
             '/tf_diff_drive@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V', 
             
             '/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model'
@@ -58,15 +55,15 @@ def generate_launch_description():
         output='screen'
     )
 
-    # НАШ НОВЫЙ СКРИПТ (ЗМЕЙКА)
+
     snake_patrol = Node(
-        package='pylesos_work', # Имя пакета
+        package='pylesos_work',
         executable='snake_patrol',
         output='screen',
-        parameters=[{'use_sim_time': True}] # Важно для синхронизации времени
+        parameters=[{'use_sim_time': True}]
     )
 
-    # RViz (опционально)
+    # RViz
     rviz = Node(
        package='rviz2',
        executable='rviz2',
@@ -79,6 +76,5 @@ def generate_launch_description():
         spawn_entity,
         bridge,
         rviz,
-        # Запускаем змейку через 5 секунд, чтобы робот успел прогрузиться
         TimerAction(period=5.0, actions=[snake_patrol])
     ])

@@ -25,7 +25,7 @@ def generate_launch_description():
         launch_arguments={'gz_args': '-r empty.sdf'}.items()
     )
 
-    # Robot State Publisher - ФИКС: добавляем use_sim_time
+    # Robot State Publisher
     robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
@@ -33,7 +33,7 @@ def generate_launch_description():
         output='screen',
         parameters=[{
             'robot_description': robot_description_content,
-            'use_sim_time': True  # ВАЖНО для Gazebo!
+            'use_sim_time': True 
         }]
     )
 
@@ -65,13 +65,13 @@ def generate_launch_description():
             # TF (Gazebo -> ROS)
             '/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
             
-            # ВАЖНО: Состояние суставов (Gazebo -> ROS)
+            # Состояние суставов (Gazebo -> ROS)
             '/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model'
         ],
         output='screen'
     )
 
-    # *** ДОБАВЛЯЕМ УПРАВЛЕНИЕ ***
+    # ДОБАВЛЯЕМ УПРАВЛЕНИЕ
     rqt_steering = ExecuteProcess(
         cmd=['ros2', 'run', 'rqt_robot_steering', 'rqt_robot_steering'],
         output='screen'

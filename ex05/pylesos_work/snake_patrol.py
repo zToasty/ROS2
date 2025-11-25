@@ -14,8 +14,7 @@ class SnakePatrol(Node):
         # Сабскрайбер для одометрии (чтобы знать, где мы)
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
         
-        # === НАСТРОЙКИ ЗМЕЙКИ ===
-        # Координаты (X, Y) по твоему описанию
+
         self.waypoints = [
             (10.0, 0.0),  # Едем вправо до упора
             (10.0, 2.0),  # Смещаемся вверх
@@ -49,10 +48,10 @@ class SnakePatrol(Node):
         # Получаем кватернионы
         rot = msg.pose.pose.orientation
         
-        # ИСПОЛЬЗУЕМ СТАНДАРТНУЮ ФУНКЦИЮ ДЛЯ ПРЕОБРАЗОВАНИЯ
+    
         (roll, pitch, yaw) = euler_from_quaternion([rot.x, rot.y, rot.z, rot.w])
         
-        self.yaw = yaw # Обновляем текущий угол поворота
+        self.yaw = yaw 
 
     def control_loop(self):
         # Если цель достигнута, переключаемся на следующую
@@ -64,8 +63,8 @@ class SnakePatrol(Node):
         
         cmd = Twist()
         
-        # Проверка: доехали ли мы? (погрешность 0.3 метра)
-        if distance < 0.3:
+        
+        if distance < 0.2:
             self.get_logger().info(f'Point {self.current_point} reached!')
             self.current_point = (self.current_point + 1) % len(self.waypoints)
             # Остановимся на мгновение
@@ -80,16 +79,15 @@ class SnakePatrol(Node):
         while angle_diff > math.pi: angle_diff -= 2 * math.pi
         while angle_diff < -math.pi: angle_diff += 2 * math.pi
 
-        # === ЛОГИКА ДВИЖЕНИЯ ===
+        
         if abs(angle_diff) > 0.1:
             # Если смотрим не туда — поворачиваемся на месте
             cmd.linear.x = 0.0
-            # Крутимся с скоростью пропорциональной ошибке, но не быстрее 0.5
             cmd.angular.z = max(min(angle_diff * 2.0, 1.0), -1.0)
         else:
-            # Если смотрим примерно на цель — газуем
-            cmd.linear.x = 0.5  # Скорость вперед
-            cmd.angular.z = angle_diff * 0.5 # Легкое подруливание
+            # Если смотрим примерно на цель — ГАЗУЕМ ГАЗУ ГАЗУ
+            cmd.linear.x = 0.5  
+            cmd.angular.z = angle_diff * 0.5 
 
         self.publisher_.publish(cmd)
 
